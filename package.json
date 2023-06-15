@@ -5,8 +5,8 @@
   "description": "Context Loader Service Module",
   "unity": "2020.3",
   "dependencies": {
-    "com.cysharp.unitask": "",
-    "com.neuecc.unirx": "",
-    "com.svermeulen.extenject": ""
+    "com.cysharp.unitask": "2.3.3",
+    "com.neuecc.unirx": "7.1.0",
+    "com.svermeulen.extenject": "9.2.0-stcf3"
   }
 }
