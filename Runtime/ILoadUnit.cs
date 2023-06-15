@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 
-namespace Services.Loading
+namespace ContextLoaderService.Runtime
 {
     public interface ILoadUnit : IProgress<float>, IDisposable
     {

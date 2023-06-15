@@ -1,6 +1,6 @@
-namespace Services.Loading
+namespace ContextLoaderService.Runtime
 {
-    public interface IloadData
+    public interface ILoadData
     {
         
     }

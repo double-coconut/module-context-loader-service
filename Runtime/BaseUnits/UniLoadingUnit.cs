@@ -3,7 +3,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UniRx;
 
-namespace Services.Loading.BaseUnits
+namespace ContextLoaderService.Runtime.BaseUnits
 {
     public class UniLoadingUnit : ILoadUnit
     {

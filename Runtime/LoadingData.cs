@@ -1,4 +1,4 @@
-namespace Services.Loading
+namespace ContextLoaderService.Runtime
 {
     public struct LoadingData
     {

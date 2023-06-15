@@ -1,9 +1,9 @@
 using Cysharp.Threading.Tasks;
 
-namespace Services.Loading
+namespace ContextLoaderService.Runtime
 {
     public interface Iloadable
     {
-        UniTask Load(IloadData loadData = null);
+        UniTask Load(ILoadData loadData = null);
     }
 }

@@ -5,7 +5,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Services.Loading.BaseUnits
+namespace ContextLoaderService.Runtime.BaseUnits
 {
     public class SceneLoadUnit<T> : ILoadUnit //where T : struct
     {

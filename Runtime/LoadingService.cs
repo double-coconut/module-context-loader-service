@@ -5,7 +5,7 @@ using UniRx;
 using UnityEngine;
 using Zenject;
 
-namespace Services.Loading
+namespace ContextLoaderService.Runtime
 {
     public class LoadingService : IInitializable, IDisposable
     {
@@ -22,7 +22,7 @@ namespace Services.Loading
             _cancellationToken = new CancellationTokenSource();
             _state = new ReactiveProperty<LoadingData>(new LoadingData()
             {
-                LoadingState = Loading.State.Idle,
+                LoadingState = Runtime.State.Idle,
                 ShowCancelDelay = -1
             });
             _loadingView = loadingView;
@@ -44,7 +44,7 @@ namespace Services.Loading
             _disposable?.Dispose();
             try
             {
-                _state.Value = SetState(Loading.State.Loading, showCancelDelay);
+                _state.Value = SetState(Runtime.State.Loading, showCancelDelay);
                 //_loadingView.SetShowCancelTimer(showCancelDelay);
                 _progress.OnNext(0f);
                 for (int i = 0; i < units.Length; i++)
@@ -61,18 +61,18 @@ namespace Services.Loading
 
                 if (delay > 0)
                 {
-                    _disposable = Observable.Timer(TimeSpan.FromSeconds(delay)).Subscribe(l => _state.Value = SetState(Loading.State.Idle));
+                    _disposable = Observable.Timer(TimeSpan.FromSeconds(delay)).Subscribe(l => _state.Value = SetState(Runtime.State.Idle));
                 }
                 else
                 {
-                    _state.Value = SetState(Loading.State.Idle);
+                    _state.Value = SetState(Runtime.State.Idle);
                 }
 
             }
             catch (Exception e)
             {
                 Debug.LogError(e);
-                _state.Value = SetState(Loading.State.Idle);
+                _state.Value = SetState(Runtime.State.Idle);
                 throw;
             }
         }
@@ -96,17 +96,17 @@ namespace Services.Loading
         {
             try
             {
-                _state.Value = SetState(Loading.State.Idle);
+                _state.Value = SetState(Runtime.State.Idle);
                 Debug.Log("<color=orange>Begin Loading</color>: Parallel.");
                 UniTask t = UniTask.WhenAll(units.Select(e => e.Load(_cancellationToken.Token)));
                 await t;
                 Debug.Log("<color=orange>End Loading</color>: Parallel.");
-                _state.Value = SetState(Loading.State.Idle);
+                _state.Value = SetState(Runtime.State.Idle);
             }
             catch (Exception e)
             {
                 Debug.LogError(e);
-                _state.Value = SetState(Loading.State.Idle);
+                _state.Value = SetState(Runtime.State.Idle);
                 throw;
             }
         }

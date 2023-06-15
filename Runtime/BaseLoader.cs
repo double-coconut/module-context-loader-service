@@ -1,7 +1,7 @@
 using Cysharp.Threading.Tasks;
 using Zenject;
 
-namespace Services.Loading
+namespace ContextLoaderService.Runtime
 {
     public abstract class BaseLoader : ILoadingFlow, IInitializable
     {
