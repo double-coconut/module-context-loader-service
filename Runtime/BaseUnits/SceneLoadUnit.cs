@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 namespace ContextLoaderService.Runtime.BaseUnits
 {
-    public class SceneLoadUnit<T> : ILoadUnit //where T : struct
+    public class SceneLoadUnit<T> : ILoadUnit
     {
         private readonly T _scene;
         private readonly LoadSceneMode _mode;
@@ -33,21 +33,29 @@ namespace ContextLoaderService.Runtime.BaseUnits
 
         public async UniTask Load(CancellationToken cancellationToken = default)
         {
-            switch (_scene)
+            try
             {
-                case string stringScene:
-                    await SceneManager.LoadSceneAsync(stringScene, _mode)
-                        .ToUniTask(progress: this, cancellationToken: cancellationToken);
-                    break;
-                case int intScene:
-                    await SceneManager.LoadSceneAsync(intScene, _mode)
-                        .ToUniTask(progress: this, cancellationToken: cancellationToken);
-                    break;
-                default:
-                    Debug.LogError(
-                        $"Your scene is not match with the scene format, it should be int or string! : {typeof(T).Name}");
-                    break;
+                switch (_scene)
+                {
+                    case string stringScene:
+                        await SceneManager.LoadSceneAsync(stringScene, _mode)
+                            .ToUniTask(progress: this, cancellationToken: cancellationToken);
+                        break;
+                    case int intScene:
+                        await SceneManager.LoadSceneAsync(intScene, _mode)
+                            .ToUniTask(progress: this, cancellationToken: cancellationToken);
+                        break;
+                    default:
+                        Debug.LogError(
+                            $"Your scene is not match with the scene format, it should be int or string! : {typeof(T).Name}");
+                        break;
+                }
             }
+            catch (Exception e)
+            {
+                throw;
+            }
+          
         }
     }
 }

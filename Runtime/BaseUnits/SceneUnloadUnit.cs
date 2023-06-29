@@ -30,21 +30,29 @@ namespace ContextLoaderService.Runtime.BaseUnits
 
         public async UniTask Load(CancellationToken cancellationToken = default)
         {
-            switch (_scene)
+            try
             {
-                case string stringScene:
-                    await SceneManager.UnloadSceneAsync(stringScene)
-                        .ToUniTask(progress: this, cancellationToken: cancellationToken);
-                    break;
-                case int intScene:
-                    await SceneManager.UnloadSceneAsync(intScene)
-                        .ToUniTask(progress: this, cancellationToken: cancellationToken);
-                    break;
-                default:
-                    Debug.LogError(
-                        $"SceneUnLoadUnit - Your scene is not match with the scene format, it should be int or string! : {typeof(T).Name}");
-                    break;
+                switch (_scene)
+                {
+                    case string stringScene:
+                        await SceneManager.UnloadSceneAsync(stringScene)
+                            .ToUniTask(progress: this, cancellationToken: cancellationToken);
+                        break;
+                    case int intScene:
+                        await SceneManager.UnloadSceneAsync(intScene)
+                            .ToUniTask(progress: this, cancellationToken: cancellationToken);
+                        break;
+                    default:
+                        Debug.LogError(
+                            $"SceneUnLoadUnit - Your scene is not match with the scene format, it should be int or string! : {typeof(T).Name}");
+                        break;
+                }
             }
+            catch (Exception e)
+            {
+                throw;
+            }
+           
         }
     }
 }

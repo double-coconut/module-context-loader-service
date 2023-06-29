@@ -16,7 +16,7 @@ namespace ContextLoaderService.Runtime
         private readonly Subject<Unit> _cancelSubject = new Subject<Unit>();
         private IDisposable _cancelTimerDisposable;
         
-        private CompositeDisposable _disposable = new CompositeDisposable();
+        private readonly CompositeDisposable _disposable = new CompositeDisposable();
 
         public Subject<Unit> CancelSubject => _cancelSubject;
 
