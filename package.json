@@ -1,6 +1,6 @@
 {
   "name": "com.doublecoconut.contextloaderservice",
-  "version": "1.0.2",
+  "version": "1.1.2",
   "displayName": "Context Loader Service",
   "description": "Context Loader Service Module",
   "unity": "2020.3",
