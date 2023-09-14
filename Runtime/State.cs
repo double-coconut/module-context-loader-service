@@ -3,6 +3,7 @@ namespace ContextLoaderService.Runtime
     public enum State
     {
         Idle,
-        Loading
+        Loading,
+        Loaded
     }
 }
