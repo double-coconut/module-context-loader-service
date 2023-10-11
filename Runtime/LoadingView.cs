@@ -1,14 +1,20 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using DG.DemiEditor;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace ContextLoaderService.Runtime
 {
     public class LoadingView : MonoBehaviour, IDisposable
     {
-        [SerializeField] private GameObject loadingDimmer;
+        [SerializeField] private List<GameObject> loadingDimmers;
+        [SerializeField] private GameObject defaultLoadingDimmer;
         [SerializeField] private Button cancelButton;
+        [SerializeField] private float loadingStateThrottle = 0.5f;
 
         private LoadingService _loadingService;
         private IDisposable _stateChangeDisposable;
@@ -20,10 +26,12 @@ namespace ContextLoaderService.Runtime
 
         public Subject<Unit> CancelSubject => _cancelSubject;
 
+        public string[] LoadingViewTypes => loadingDimmers.Select(obj => obj.name).ToArray();
+
         public void Initialize(LoadingService loadingService)
         {
             _loadingService = loadingService;
-            _loadingService.State.Subscribe(OnLoadingServiceStateChanged).AddTo(_disposable);
+            _loadingService.State.Throttle(TimeSpan.FromSeconds(loadingStateThrottle)).Subscribe(OnLoadingServiceStateChanged).AddTo(_disposable);
             _disposable.Add(_cancelSubject);
             cancelButton.onClick.AsObservable().Subscribe(unit => _cancelSubject?.OnNext(Unit.Default)).AddTo(_disposable);;
             DontDestroyOnLoad(gameObject);
@@ -38,7 +46,16 @@ namespace ContextLoaderService.Runtime
         
         private void OnLoadingServiceStateChanged(LoadingData newState)
         {
-            loadingDimmer.SetActive(newState.LoadingState == State.Loading);
+            if (newState.LoadingType.IsNullOrEmpty())
+            {
+                defaultLoadingDimmer.SetActive(newState.LoadingState == State.Loading);
+                loadingDimmers.ForEach(obj => obj.SetActive(false));
+            }
+            else
+            {
+                loadingDimmers.ForEach(obj =>
+                    obj.SetActive(obj.name.Equals(newState.LoadingType) && newState.LoadingState == State.Loading));
+            }
             
             if (newState.LoadingState == State.Loading)
             {

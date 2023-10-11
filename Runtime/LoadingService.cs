@@ -39,12 +39,13 @@ namespace ContextLoaderService.Runtime
 
         private IDisposable _disposable;
         
-        public async UniTask BeginLoading(double delay, double showCancelDelay, params ILoadUnit[] units)
+        public async UniTask BeginLoading(double delay, double showCancelDelay, string loadingType,
+            params ILoadUnit[] units)
         {
             _disposable?.Dispose();
             try
             {
-                _state.Value = SetState(Runtime.State.Loading, showCancelDelay);
+                _state.Value = SetState(Runtime.State.Loading, showCancelDelay, loadingType);
                 //_loadingView.SetShowCancelTimer(showCancelDelay);
                 _progress.OnNext(0f);
                 for (int i = 0; i < units.Length; i++)
@@ -76,20 +77,25 @@ namespace ContextLoaderService.Runtime
                 throw;
             }
         }
-
+        
         public UniTask BeginLoading(params ILoadUnit[] units)
         {
-            return BeginLoading(-1, -1, units);
+            return BeginLoading(-1, -1, String.Empty, units);
+        }
+        
+        public UniTask BeginLoading(string loadingType, params ILoadUnit[] units)
+        {
+            return BeginLoading(-1, -1, loadingType, units);
         }
         
         public UniTask BeginLoading(double showCancelDelay, params ILoadUnit[] units)
         {
-            return BeginLoading(-1, showCancelDelay, units);
+            return BeginLoading(-1, showCancelDelay, String.Empty, units);
         }
 
         public UniTask BeginLoadingWithDelay(double delay, params ILoadUnit[] units)
         {
-            return BeginLoading(delay, -1, units);
+            return BeginLoading(delay, -1, String.Empty, units);
         }
         
         public async UniTask BeginLoadingParallel(params ILoadUnit[] units)
@@ -116,12 +122,13 @@ namespace ContextLoaderService.Runtime
             _cancellationToken.Cancel();
         }
 
-        private LoadingData SetState(State state, double showCancelDelay = -1)
+        private LoadingData SetState(State state, double showCancelDelay = -1, string loadingType = "")
         {
             return new LoadingData
             {
                 LoadingState = state,
-                ShowCancelDelay = showCancelDelay
+                ShowCancelDelay = showCancelDelay,
+                LoadingType = loadingType
             };
         }
         

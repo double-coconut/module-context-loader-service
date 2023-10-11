@@ -4,5 +4,6 @@ namespace ContextLoaderService.Runtime
     {
         public State LoadingState;
         public double ShowCancelDelay;
+        public string LoadingType;
     }
 }
