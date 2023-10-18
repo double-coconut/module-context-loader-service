@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DG.DemiEditor;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace ContextLoaderService.Runtime
@@ -46,7 +44,7 @@ namespace ContextLoaderService.Runtime
         
         private void OnLoadingServiceStateChanged(LoadingData newState)
         {
-            if (newState.LoadingType.IsNullOrEmpty())
+            if (string.IsNullOrEmpty(newState.LoadingType))
             {
                 defaultLoadingDimmer.SetActive(newState.LoadingState == State.Loading);
                 loadingDimmers.ForEach(obj => obj.SetActive(false));
