@@ -34,8 +34,23 @@ namespace ContextLoaderService.Runtime
         public void Run(ILoadData data = default)
         {
             _hasInjected = true;
-            context.Container.Bind<ILoadData>().FromInstance(data).AsSingle().NonLazy();
-            LookupContainer().InjectGameObject(gameObject);
+            DiContainer container = LookupContainer();
+            container.InjectGameObject(gameObject);
+            if (data != default)
+            {
+                switch (context)
+                {
+                    case GameObjectContext goContext:
+                        goContext.PreInstall += () =>
+                            goContext.Container.Bind<ILoadData>().FromInstance(data).AsSingle().NonLazy();
+                        break;
+                    case SceneContext sceneContext:
+                        sceneContext.PreInstall += () =>
+                            sceneContext.Container.Bind<ILoadData>().FromInstance(data).AsSingle().NonLazy();
+                        break;
+                }
+            }
+
             context.Run();
         }
 
