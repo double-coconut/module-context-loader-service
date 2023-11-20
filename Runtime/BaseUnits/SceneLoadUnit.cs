@@ -55,7 +55,8 @@ namespace ContextLoaderService.Runtime.BaseUnits
             {
                 throw;
             }
-          
+
+            await UniTask.DelayFrame(1, cancellationToken: cancellationToken);
         }
     }
 }
