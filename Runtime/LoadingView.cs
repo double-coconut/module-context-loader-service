@@ -9,6 +9,7 @@ namespace ContextLoaderService.Runtime
 {
     public class LoadingView : MonoBehaviour, IDisposable
     {
+        [SerializeField] private Canvas canvas;
         [SerializeField] private List<GameObject> loadingDimmers;
         [SerializeField] private GameObject defaultLoadingDimmer;
         [SerializeField] private Button cancelButton;
@@ -16,14 +17,12 @@ namespace ContextLoaderService.Runtime
 
         private LoadingService _loadingService;
         private IDisposable _stateChangeDisposable;
-
         private readonly Subject<Unit> _cancelSubject = new Subject<Unit>();
         private IDisposable _cancelTimerDisposable;
-        
         private readonly CompositeDisposable _disposable = new CompositeDisposable();
 
+        public Canvas Canvas => canvas;
         public Subject<Unit> CancelSubject => _cancelSubject;
-
         public string[] LoadingViewTypes => loadingDimmers.Select(obj => obj.name).ToArray();
 
         public void Initialize(LoadingService loadingService)
@@ -84,5 +83,12 @@ namespace ContextLoaderService.Runtime
                 Destroy(gameObject);
             }
         }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if(canvas == null) canvas = GetComponent<Canvas>();
+        }
+#endif
     }
 }
