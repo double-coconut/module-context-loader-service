@@ -16,7 +16,10 @@ namespace ContextLoaderService.Runtime
 
         public IObservable<LoadingData> State => _state;
         public IObservable<float> Progress => _progress;
+        public LoadingView LoadingView => _loadingView;
 
+        
+        
         public LoadingService(LoadingView loadingView)
         {
             _cancellationToken = new CancellationTokenSource();
