@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UniRx;
+using R3;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,18 +17,22 @@ namespace ContextLoaderService.Runtime
 
         private LoadingService _loadingService;
         private IDisposable _stateChangeDisposable;
+
         private readonly Subject<Unit> _cancelSubject = new Subject<Unit>();
         private IDisposable _cancelTimerDisposable;
+        
         private readonly CompositeDisposable _disposable = new CompositeDisposable();
 
         public Canvas Canvas => canvas;
         public Subject<Unit> CancelSubject => _cancelSubject;
         public string[] LoadingViewTypes => loadingDimmers.Select(obj => obj.name).ToArray();
 
+        
+        
         public void Initialize(LoadingService loadingService)
         {
             _loadingService = loadingService;
-            _loadingService.State.Throttle(TimeSpan.FromSeconds(loadingStateThrottle)).Subscribe(OnLoadingServiceStateChanged).AddTo(_disposable);
+            _loadingService.State.Debounce(TimeSpan.FromSeconds(loadingStateThrottle)).Subscribe(OnLoadingServiceStateChanged).AddTo(_disposable);
             _disposable.Add(_cancelSubject);
             cancelButton.onClick.AsObservable().Subscribe(unit => _cancelSubject?.OnNext(Unit.Default)).AddTo(_disposable);;
             DontDestroyOnLoad(gameObject);
@@ -61,7 +65,7 @@ namespace ContextLoaderService.Runtime
                 {
                     return;
                 }
-                _cancelTimerDisposable = Observable.Timer(TimeSpan.FromSeconds(newState.ShowCancelDelay), Scheduler.MainThreadIgnoreTimeScale).Subscribe(l => ShowCancelButton());
+                _cancelTimerDisposable = Observable.Timer(TimeSpan.FromSeconds(newState.ShowCancelDelay), UnityTimeProvider.TimeUpdateIgnoreTimeScale).Subscribe(l => ShowCancelButton());
             }
             else
             {
@@ -83,12 +87,5 @@ namespace ContextLoaderService.Runtime
                 Destroy(gameObject);
             }
         }
-
-#if UNITY_EDITOR
-        private void OnValidate()
-        {
-            if(canvas == null) canvas = GetComponent<Canvas>();
-        }
-#endif
     }
 }

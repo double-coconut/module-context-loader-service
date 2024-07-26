@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using UniRx;
+using R3;
 using UnityEngine;
 using Zenject;
 
@@ -10,16 +10,13 @@ namespace ContextLoaderService.Runtime
     public class LoadingService : IInitializable, IDisposable
     {
         private readonly ReactiveProperty<LoadingData> _state;
-        private readonly Subject<float> _progress = new Subject<float>();
+        private readonly Subject<float> _progress = new();
         private readonly LoadingView _loadingView;
         private readonly CancellationTokenSource _cancellationToken;
 
-        public IObservable<LoadingData> State => _state;
-        public IObservable<float> Progress => _progress;
-        public LoadingView LoadingView => _loadingView;
+        public Observable<LoadingData> State => _state;
+        public Observable<float> Progress => _progress;
 
-        
-        
         public LoadingService(LoadingView loadingView)
         {
             _cancellationToken = new CancellationTokenSource();
@@ -56,7 +53,7 @@ namespace ContextLoaderService.Runtime
                     var loadUnit = units[i];
                     Debug.Log($"<color=orange>Begin Loading</color>: {loadUnit.GetType().Name}");
                     var index = i;
-                    loadUnit.Progress.Subscribe(p => _progress.OnNext(p * ((1f + index) / units.Length)));
+                    loadUnit.Progress.ToObservable().Subscribe(p => _progress.OnNext(p * ((1f + index) / units.Length)));
                     await loadUnit.Load(_cancellationToken.Token);
                     Debug.Log($"<color=cyan>End Loading</color>: {loadUnit.GetType().Name}");
                 }

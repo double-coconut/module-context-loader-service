@@ -4,7 +4,7 @@
     "references": [
         "Zenject",
         "UniTask",
-        "UniRx"
+        "R3.Unity"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using UniRx;
+using R3;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,7 +11,7 @@ namespace ContextLoaderService.Runtime.BaseUnits
     {
         private readonly T _scene;
         private readonly Subject<float> _progress = new Subject<float>();
-        public IObservable<float> Progress => _progress;
+        public IObservable<float> Progress => _progress.AsSystemObservable();
 
         public SceneUnloadUnit(T scene)
         {

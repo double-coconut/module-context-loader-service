@@ -7,7 +7,7 @@ namespace ContextLoaderService.Runtime
 {
     public abstract class BaseLoader<T> : BaseLoader where T : ILoadData
     {
-        protected readonly T Data;
+        protected readonly T LoadData;
 
         protected BaseLoader(LoadingService loadingService, ILoadData data) : base(loadingService)
         {
@@ -16,7 +16,7 @@ namespace ContextLoaderService.Runtime
                 throw new InvalidDataException($"Load data is Null or has different type than {typeof(T)}");
             }
 
-            Data = loadData;
+            LoadData = loadData;
         }
     }
 

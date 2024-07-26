@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using UniRx;
+using R3;
 
 namespace ContextLoaderService.Runtime.BaseUnits
 {
@@ -16,7 +16,7 @@ namespace ContextLoaderService.Runtime.BaseUnits
             _task = task;
         }
 
-        public IObservable<float> Progress => new Subject<float>().AddTo(_disposable);
+        public IObservable<float> Progress => new Subject<float>().AsSystemObservable();
 
 
         public UniTask Load(CancellationToken cancellationToken = default)
@@ -50,7 +50,7 @@ namespace ContextLoaderService.Runtime.BaseUnits
             _task = task;
         }
 
-        public IObservable<float> Progress => new Subject<float>().AddTo(_disposable);
+        public IObservable<float> Progress => new Subject<float>().AsSystemObservable();
 
 
         public async UniTask Load(CancellationToken cancellationToken = default)
