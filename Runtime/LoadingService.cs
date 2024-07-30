@@ -14,6 +14,9 @@ namespace ContextLoaderService.Runtime
         private readonly LoadingView _loadingView;
         private readonly CancellationTokenSource _cancellationToken;
 
+
+        public LoadingView LoadingView => _loadingView;
+
         public Observable<LoadingData> State => _state;
         public Observable<float> Progress => _progress;
 
