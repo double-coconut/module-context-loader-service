@@ -2,6 +2,7 @@ using System.IO;
 using ContextLoaderService.Runtime;
 using UnityEditor;
 using UnityEngine;
+using Logger = DCLogger.Runtime.Logger;
 
 namespace Editor
 {
@@ -27,7 +28,11 @@ namespace Editor
         {
             if (loadingView == null)
             {
+#if DC_LOGGING
+                Logger.LogWarning("LoadingView reference is missing.", ContextLoaderLogChannels.Default);
+#else
                 Debug.LogWarning("LoadingView reference is missing.");
+#endif
                 return;
             }
             

@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using R3;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Logger = DCLogger.Runtime.Logger;
 
 namespace ContextLoaderService.Runtime.BaseUnits
 {
@@ -46,8 +47,15 @@ namespace ContextLoaderService.Runtime.BaseUnits
                             .ToUniTask(progress: this, cancellationToken: cancellationToken);
                         break;
                     default:
-                        Debug.LogError(
+#if DC_LOGGING
+                        Logger.LogError(
+                            $"Your scene is not match with the scene format, it should be int or string! : {typeof(T).Name}",
+                            ContextLoaderLogChannels.Error);
+#else
+                  Debug.LogError(
                             $"Your scene is not match with the scene format, it should be int or string! : {typeof(T).Name}");
+#endif
+      
                         break;
                 }
             }
