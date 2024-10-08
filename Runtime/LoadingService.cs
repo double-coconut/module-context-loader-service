@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using R3;
 using UnityEngine;
 using Zenject;
+using Logger = DCLogger.Runtime.Logger;
 
 namespace ContextLoaderService.Runtime
 {
@@ -43,7 +44,13 @@ namespace ContextLoaderService.Runtime
             {
                 CancelCurrentLoadings();
             });
+#if DC_LOGGING
+                    Logger.Log($"Loading view registered. Name: {loadingView?.name}",
+                        ContextLoaderLogChannels.Default);
+#else
             Debug.Log($"Loading view registered. Name: {loadingView?.name}");
+#endif
+            
         }
         
         public async UniTask BeginLoading(double delay, double showCancelDelay, string loadingType,
@@ -58,43 +65,58 @@ namespace ContextLoaderService.Runtime
                 for (int i = 0; i < units.Length; i++)
                 {
                     var loadUnit = units[i];
+#if DC_LOGGING
+                    Logger.Log($"<color=orange>Begin Loading</color>: {loadUnit.GetType().Name}",
+                        ContextLoaderLogChannels.Default);
+#else
                     Debug.Log($"<color=orange>Begin Loading</color>: {loadUnit.GetType().Name}");
+#endif
                     var index = i;
-                    loadUnit.Progress.ToObservable().Subscribe(p => _progress.OnNext(p * ((1f + index) / units.Length)));
+                    loadUnit.Progress.ToObservable()
+                        .Subscribe(p => _progress.OnNext(p * ((1f + index) / units.Length)));
                     await loadUnit.Load(_cancellationToken.Token);
+#if DC_LOGGING
+                    Logger.Log($"<color=cyan>End Loading</color>: {loadUnit.GetType().Name}",
+                        ContextLoaderLogChannels.Default);
+#else
                     Debug.Log($"<color=cyan>End Loading</color>: {loadUnit.GetType().Name}");
+#endif
                 }
 
                 _progress.OnNext(1f);
 
                 if (delay > 0)
                 {
-                    _disposable = Observable.Timer(TimeSpan.FromSeconds(delay)).Subscribe(l => _state.Value = SetState(Runtime.State.Idle));
+                    _disposable = Observable.Timer(TimeSpan.FromSeconds(delay))
+                        .Subscribe(l => _state.Value = SetState(Runtime.State.Idle));
                 }
                 else
                 {
                     _state.Value = SetState(Runtime.State.Idle);
                 }
-
             }
             catch (Exception e)
             {
+#if DC_LOGGING
+                Logger.LogError(e.ToString(), ContextLoaderLogChannels.Error);
+#else
                 Debug.LogError(e);
+#endif
                 _state.Value = SetState(Runtime.State.Idle);
                 throw;
             }
         }
-        
+
         public UniTask BeginLoading(params ILoadUnit[] units)
         {
             return BeginLoading(-1, -1, String.Empty, units);
         }
-        
+
         public UniTask BeginLoading(string loadingType, params ILoadUnit[] units)
         {
             return BeginLoading(-1, -1, loadingType, units);
         }
-        
+
         public UniTask BeginLoading(double showCancelDelay, params ILoadUnit[] units)
         {
             return BeginLoading(-1, showCancelDelay, String.Empty, units);
@@ -104,21 +126,33 @@ namespace ContextLoaderService.Runtime
         {
             return BeginLoading(delay, -1, String.Empty, units);
         }
-        
+
         public async UniTask BeginLoadingParallel(params ILoadUnit[] units)
         {
             try
             {
                 _state.Value = SetState(Runtime.State.Idle);
+#if DC_LOGGING
+                Logger.Log("<color=orange>Begin Loading</color>: Parallel.", ContextLoaderLogChannels.Default);
+#else
                 Debug.Log("<color=orange>Begin Loading</color>: Parallel.");
+#endif
                 UniTask t = UniTask.WhenAll(units.Select(e => e.Load(_cancellationToken.Token)));
                 await t;
+#if DC_LOGGING
+                Logger.Log("<color=orange>End Loading</color>: Parallel.", ContextLoaderLogChannels.Default);
+#else
                 Debug.Log("<color=orange>End Loading</color>: Parallel.");
+#endif
                 _state.Value = SetState(Runtime.State.Idle);
             }
             catch (Exception e)
             {
+#if DC_LOGGING
+                Logger.LogError(e.ToString(), ContextLoaderLogChannels.Error);
+#else
                 Debug.LogError(e);
+#endif
                 _state.Value = SetState(Runtime.State.Idle);
                 throw;
             }
@@ -138,7 +172,7 @@ namespace ContextLoaderService.Runtime
                 LoadingType = loadingType
             };
         }
-        
+
         public void Dispose()
         {
             CancelCurrentLoadings();

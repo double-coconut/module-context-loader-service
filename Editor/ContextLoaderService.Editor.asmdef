@@ -2,7 +2,8 @@
     "name": "ContextLoaderService.Editor",
     "rootNamespace": "",
     "references": [
-        "GUID:adcc8f94e6ff441d892463162646da44"
+        "ContextLoaderService",
+        "DCLogger.Runtime"
     ],
     "includePlatforms": [
         "Editor"
