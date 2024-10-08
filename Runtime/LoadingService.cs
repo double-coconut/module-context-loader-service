@@ -11,8 +11,9 @@ namespace ContextLoaderService.Runtime
     {
         private readonly ReactiveProperty<LoadingData> _state;
         private readonly Subject<float> _progress = new();
-        private readonly LoadingView _loadingView;
         private readonly CancellationTokenSource _cancellationToken;
+        private LoadingView _loadingView;
+        private IDisposable _disposable;
 
 
         public LoadingView LoadingView => _loadingView;
@@ -20,7 +21,7 @@ namespace ContextLoaderService.Runtime
         public Observable<LoadingData> State => _state;
         public Observable<float> Progress => _progress;
 
-        public LoadingService(LoadingView loadingView)
+        public LoadingService()
         {
             _cancellationToken = new CancellationTokenSource();
             _state = new ReactiveProperty<LoadingData>(new LoadingData()
@@ -28,19 +29,22 @@ namespace ContextLoaderService.Runtime
                 LoadingState = Runtime.State.Idle,
                 ShowCancelDelay = -1
             });
-            _loadingView = loadingView;
         }
 
         public void Initialize()
         {
-            _loadingView.Initialize(this);
-            _loadingView.CancelSubject.Subscribe(unit =>
+        }
+
+        
+        public void RegisterLoadingView(LoadingView loadingView)
+        {
+            _loadingView = loadingView;
+            _loadingView?.CancelSubject.Subscribe(unit =>
             {
                 CancelCurrentLoadings();
             });
+            Debug.Log($"Loading view registered. Name: {loadingView?.name}");
         }
-
-        private IDisposable _disposable;
         
         public async UniTask BeginLoading(double delay, double showCancelDelay, string loadingType,
             params ILoadUnit[] units)

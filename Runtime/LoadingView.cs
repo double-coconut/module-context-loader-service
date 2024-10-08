@@ -4,10 +4,11 @@ using System.Linq;
 using R3;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 namespace ContextLoaderService.Runtime
 {
-    public class LoadingView : MonoBehaviour, IDisposable
+    public class LoadingView : MonoBehaviour, IInitializable, IDisposable
     {
         [SerializeField] private Canvas canvas;
         [SerializeField] private List<GameObject> loadingDimmers;
@@ -27,11 +28,14 @@ namespace ContextLoaderService.Runtime
         public Subject<Unit> CancelSubject => _cancelSubject;
         public string[] LoadingViewTypes => loadingDimmers.Select(obj => obj.name).ToArray();
 
-        
-        
-        public void Initialize(LoadingService loadingService)
+        public LoadingView(LoadingService loadingService)
         {
             _loadingService = loadingService;
+        }
+        
+        public void Initialize()
+        {
+            _loadingService.RegisterLoadingView(this);
             _loadingService.State.Debounce(TimeSpan.FromSeconds(loadingStateThrottle)).Subscribe(OnLoadingServiceStateChanged).AddTo(_disposable);
             _disposable.Add(_cancelSubject);
             cancelButton.onClick.AsObservable().Subscribe(unit => _cancelSubject?.OnNext(Unit.Default)).AddTo(_disposable);;
