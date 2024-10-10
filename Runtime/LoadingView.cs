@@ -28,14 +28,16 @@ namespace ContextLoaderService.Runtime
         public Subject<Unit> CancelSubject => _cancelSubject;
         public string[] LoadingViewTypes => loadingDimmers.Select(obj => obj.name).ToArray();
 
-        public LoadingView(LoadingService loadingService)
+        
+        [Inject]
+        private void Inject(LoadingService loadingService)
         {
             _loadingService = loadingService;
+            _loadingService.RegisterLoadingView(this);
         }
         
         public void Initialize()
         {
-            _loadingService.RegisterLoadingView(this);
             _loadingService.State.Debounce(TimeSpan.FromSeconds(loadingStateThrottle)).Subscribe(OnLoadingServiceStateChanged).AddTo(_disposable);
             _disposable.Add(_cancelSubject);
             cancelButton.onClick.AsObservable().Subscribe(unit => _cancelSubject?.OnNext(Unit.Default)).AddTo(_disposable);;
